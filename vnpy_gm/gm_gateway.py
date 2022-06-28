@@ -305,12 +305,16 @@ class GmTdApi:
 
     def onRtnOrder(self, order) -> None:
         """生成时间戳"""
+        type: OrderType = ORDERTYPE_GM2VT.get(order.order_type, None)
+        if type is None:
+            return
+
         exchange, symbol = order.symbol.split(".")
         order_data: OrderData = OrderData(
             symbol=symbol,
             exchange=EXCHANGE_GM2VT[exchange],
             orderid=order.cl_ord_id,
-            type=ORDERTYPE_GM2VT[order.order_type],
+            type=type,
             direction=DIRECTION_GM2VT[order.side],
             offset=POSITIONEFFECT_GM2VT[order.position_effect],
             price=round(order.price, 2),
@@ -327,6 +331,11 @@ class GmTdApi:
 
     def onRtnTrade(self, rpt) -> None:
         """生成时间戳"""
+        if rpt.exec_type != 15:
+            if rpt.ord_rej_reason_detail:
+                self.gateway.write_log(rpt.ord_rej_reason_detail)
+            return
+
         exchange, symbol = rpt.symbol.split(".")
         trade: TradeData = TradeData(
             symbol=symbol,
