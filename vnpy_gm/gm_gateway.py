@@ -4,9 +4,9 @@ from time import sleep
 from typing import Dict, Tuple, List
 from pandas import DataFrame
 
-from google.protobuf.timestamp_pb2 import Timestamp
 import tushare as ts
 from tushare.pro.client import DataApi
+from google.protobuf.timestamp_pb2 import Timestamp
 from gmtrade.api import (
     set_token,
     order_volume,
@@ -21,7 +21,12 @@ from gmtrade.api import (
 )
 from gmtrade.api.storage import ctx
 from gmtrade.api.callback import callback_controller
-from gmtrade.csdk.c_sdk import c_status_fail, py_gmi_set_data_callback, py_gmi_start, py_gmi_stop
+from gmtrade.csdk.c_sdk import (
+    c_status_fail,
+    py_gmi_set_data_callback,
+    py_gmi_start,
+    py_gmi_stop
+)
 
 from vnpy.event import EventEngine
 from vnpy.trader.gateway import BaseGateway
@@ -56,7 +61,6 @@ STATUS_GM2VT: Dict[int, Status] = {
     5: Status.CANCELLED,
     6: Status.CANCELLED,
     8: Status.REJECTED,
-    6: Status.CANCELLED,
     9: Status.CANCELLED,
     10: Status.SUBMITTING,
     12: Status.CANCELLED
@@ -112,8 +116,8 @@ class GmGateway(BaseGateway):
     default_name: str = "GM"
 
     default_setting: Dict[str, str] = {
-        "token": "",
-        "账户": ""
+        "Token": "",
+        "账户ID": ""
     }
 
     exchanges: List[str] = list(EXCHANGE_GM2VT.values())
@@ -129,8 +133,8 @@ class GmGateway(BaseGateway):
 
     def connect(self, setting: dict) -> None:
         """连接交易接口"""
-        token: str = setting["token"]
-        accountid: str = setting["账户"]
+        token: str = setting["Token"]
+        accountid: str = setting["账户ID"]
 
         self.md_api.init()
         self.td_api.connect(token, accountid)
@@ -195,8 +199,10 @@ class GmMdApi:
     def init(self) -> None:
         """初始化"""
         ts.set_token(self.password)
+
         self.pro: DataApi = ts.pro_api()
         self.query_contract()
+
         self._active = True
         self.gateway.write_log("数据服务初始化完成")
 
@@ -210,7 +216,7 @@ class GmMdApi:
 
         data: DataFrame = sh_data.append(sz_data, ignore_index=True)
 
-        if data is not None: 
+        if data is not None:
             for ix, row in data.iterrows():
                 contract: ContractData = ContractData(
                     symbol=row["symbol"],
@@ -358,15 +364,16 @@ class GmTdApi:
         """连接交易接口"""
         if not self.inited:
             self.inited = True
+            print(1)
             set_token(token)
-
+            print(2)
             set_endpoint()
             login(account(accountid))
             err: int = self.init_callback()
             if err:
                 self.gateway.write_log(f"交易服务器登陆失败，错误码{err}")
                 return
-
+            print(3)
             self.query_order()
             self.query_trade()
 
@@ -376,16 +383,16 @@ class GmTdApi:
     def init_callback(self) -> int:
         """注册回调"""
         ctx.inside_file_module = self
-    
+
         ctx.on_execution_report_fun = self.onRtnTrade
         ctx.on_order_status_fun = self.onRtnOrder
         ctx.on_trade_data_connected_fun = self.onconnected
         ctx.on_trade_data_disconnected_fun = self.ondisconnected
-    
+
         ctx.on_error_fun = self.on_error
-    
+
         py_gmi_set_data_callback(callback_controller)  # 设置事件处理的回调函数
-    
+
         status: int = py_gmi_start()  # type: int
         if c_status_fail(status, 'gmi_start'):
             self._active = False
@@ -443,7 +450,7 @@ class GmTdApi:
             exchange: Exchange = EXCHANGE_GM2VT.get(exchange_, None)
             if not exchange:
                 continue
-        
+
             position: PositionData = PositionData(
                 symbol=symbol,
                 exchange=exchange,
@@ -500,7 +507,7 @@ class GmTdApi:
                 gateway_name=self.gateway_name
             )
             self.gateway.on_order(order)
-            
+
         self.gateway.write_log("委托信息查询成功")
 
     def query_trade(self) -> None:
@@ -545,7 +552,7 @@ def generate_datetime(timestamp: str) -> datetime:
 def generate_datetime1(timestamp: Timestamp) -> datetime:
     """生成时间"""
     dt: datetime = datetime.fromtimestamp(timestamp.seconds)
-    dt: datetime = dt + timedelta(microseconds=timestamp.nanos/1000)
+    dt: datetime = dt + timedelta(microseconds=timestamp.nanos / 1000)
     dt: datetime = dt.replace(tzinfo=CHINA_TZ)
     return dt
 
