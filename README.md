@@ -7,17 +7,17 @@
 <p align="center">
     <img src ="https://img.shields.io/badge/version-1.0.0-blueviolet.svg"/>
     <img src ="https://img.shields.io/badge/platform-windows|linux|macos-yellow.svg"/>
-    <img src ="https://img.shields.io/badge/python-3.7|3.8|3.9|3.10-blue.svg" />
+    <img src ="https://img.shields.io/badge/python-3.7-blue.svg" />
     <img src ="https://img.shields.io/github/license/vnpy/vnpy.svg?color=orange"/>
 </p>
 
 ## 说明
 
-用于对接掘金量化终端开发的掘金交易接口（使用时请保持终端连接）。
+用于对接掘金量化终端3.14.2版本开发的掘金交易接口，行情数据由TuShare数据服务提供。
 
 ## 安装
 
-安装环境推荐基于3.0.0版本以上的【[**VeighNa Studio**](https://www.vnpy.com)】。
+安装环境推荐基于3.3.0版本以上的【[**VeighNa Studio**](https://www.vnpy.com)】和Python3.7环境。
 
 直接使用pip命令：
 
@@ -60,3 +60,15 @@ def main():
 if __name__ == "__main__":
     main()
 ```
+
+## 连接
+
+请注意：
+
+1. 请使用掘金量化终端3.14.2版本。
+
+2. 连接vnpy_gm的token参数可从掘金量化终端的【系统设置】-【密钥管理】处获取，连接vnpy_gm的账户ID参数可从掘金量化终端的【账户管理】-【账户名称】处获取。
+
+3. 连接前请在【全局配置】处配置好TuShare数据服务。
+
+4. 使用时请保持掘金量化终端连接。
