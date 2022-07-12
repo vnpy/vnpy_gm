@@ -366,7 +366,6 @@ class GmTdApi:
             self.inited = True
 
             set_token(token)
-
             set_endpoint()
             login(account(accountid))
             err: int = self.init_callback()
