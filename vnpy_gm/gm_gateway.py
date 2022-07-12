@@ -364,16 +364,13 @@ class GmTdApi:
         """连接交易接口"""
         if not self.inited:
             self.inited = True
-            print(1)
             set_token(token)
-            print(2)
             set_endpoint()
             login(account(accountid))
             err: int = self.init_callback()
             if err:
                 self.gateway.write_log(f"交易服务器登陆失败，错误码{err}")
                 return
-            print(3)
             self.query_order()
             self.query_trade()
 
