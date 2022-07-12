@@ -364,6 +364,7 @@ class GmTdApi:
         """连接交易接口"""
         if not self.inited:
             self.inited = True
+
             set_token(token)
             set_endpoint()
             login(account(accountid))
@@ -371,6 +372,7 @@ class GmTdApi:
             if err:
                 self.gateway.write_log(f"交易服务器登陆失败，错误码{err}")
                 return
+
             self.query_order()
             self.query_trade()
 
@@ -451,7 +453,7 @@ class GmTdApi:
             position: PositionData = PositionData(
                 symbol=symbol,
                 exchange=exchange,
-                direction=Direction.NET,
+                direction=DIRECTION_GM2VT[d.side],
                 volume=d.volume,
                 frozen=d.order_frozen,
                 price=round(d.vwap, 2),
