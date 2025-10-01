@@ -22,10 +22,8 @@ CHINA_TZ = ZoneInfo("Asia/Shanghai")
 
 
 def to_gm_symbol(symbol: str, exchange: Exchange) -> str:
-    """
-    将交易所代码转换为掘金代码（交易所大写.合约名称小写）
-    """
-    gm_symbol: str = f"{exchange.value.upper()}.{symbol.lower()}"
+    """转换掘金合约代码（交易所.合约）"""
+    gm_symbol: str = f"{exchange.value}.{symbol}"
     return gm_symbol
 
 
