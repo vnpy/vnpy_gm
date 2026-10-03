@@ -1,3 +1,5 @@
+"""掘金历史数据服务实现。"""
+
 from datetime import datetime, timedelta
 from collections.abc import Callable
 
@@ -31,7 +33,7 @@ class GmDatafeed(BaseDatafeed):
     """掘金GMData数据服务接口"""
 
     def __init__(self) -> None:
-        """"""
+        """读取数据服务密码，并标记尚未初始化。"""
         # 加载配置
         self.password: str = SETTINGS["datafeed.password"]
 
