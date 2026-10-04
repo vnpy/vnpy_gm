@@ -1,7 +1,7 @@
 """掘金历史数据服务实现。"""
 
 from datetime import datetime, timedelta
-from collections.abc import Callable
+from collections.abc import Callable, Hashable
 from typing import cast
 
 import pandas as pd
@@ -15,13 +15,13 @@ from vnpy.trader.object import BarData, TickData, HistoryRequest
 from vnpy.trader.setting import SETTINGS
 
 
-INTERVAL_VT2GM = {
+INTERVAL_VT2GM: dict[Interval, str] = {
     Interval.MINUTE: "60s",
     Interval.HOUR: "3600s",
     Interval.DAILY: "1d",
 }
 
-CHINA_TZ = ZoneInfo("Asia/Shanghai")
+CHINA_TZ: ZoneInfo = ZoneInfo("Asia/Shanghai")
 
 
 def to_gm_symbol(symbol: str, exchange: Exchange) -> str:
@@ -49,6 +49,7 @@ class GmDatafeed(BaseDatafeed):
             output("GMData数据服务初始化失败：密码为空！")
             return False
 
+        ex: Exception
         try:
             set_token(self.password)
 
@@ -84,6 +85,7 @@ class GmDatafeed(BaseDatafeed):
 
         fields: list = ["open", "close", "low", "high", "volume", "amount", "position", "bob"]
 
+        ex: Exception
         try:
             df: pd.DataFrame = history(
                 symbol=gm_symbol,
@@ -102,6 +104,8 @@ class GmDatafeed(BaseDatafeed):
         bars: list[BarData] = []
 
         if df is not None:
+            _ix: Hashable
+            row: pd.Series
             for _ix, row in df.iterrows():
                 dt: datetime = row["bob"].to_pydatetime()
 
@@ -148,6 +152,7 @@ class GmDatafeed(BaseDatafeed):
             output("GMData查询Tick数据失败：查询时间过长")
             return []
 
+        ex: Exception
         try:
             history_data : list = history(
                 symbol=gm_symbol,
@@ -164,6 +169,7 @@ class GmDatafeed(BaseDatafeed):
 
         ticks: list[TickData] = []
 
+        td: dict
         for td in history_data:
             dt: datetime = td["created_at"]
 
