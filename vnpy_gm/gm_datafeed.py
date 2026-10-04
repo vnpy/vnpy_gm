@@ -2,6 +2,7 @@
 
 from datetime import datetime, timedelta
 from collections.abc import Callable
+from typing import cast
 
 import pandas as pd
 from gm.api import set_token, history
@@ -67,15 +68,15 @@ class GmDatafeed(BaseDatafeed):
 
         symbol: str = req.symbol
         exchange: Exchange = req.exchange
-        interval: Interval = req.interval
+        interval: Interval = cast(Interval, req.interval)
         start: datetime = req.start
-        end: datetime = req.end
+        end: datetime = cast(datetime, req.end)
 
         gm_symbol: str = to_gm_symbol(symbol, exchange)
 
         gm_interval: str | None = INTERVAL_VT2GM.get(interval)
         if not gm_interval:
-            output(f"GMData查询K线数据失败：不支持的时间周期{req.interval.value}")
+            output(f"GMData查询K线数据失败：不支持的时间周期{interval.value}")
             return []
 
         if start > end:
@@ -132,7 +133,7 @@ class GmDatafeed(BaseDatafeed):
         symbol: str = req.symbol
         exchange: Exchange = req.exchange
         start: datetime = req.start
-        end: datetime = req.end
+        end: datetime = cast(datetime, req.end)
 
         # 股票期权不添加交易所后缀
         gm_symbol: str = to_gm_symbol(symbol, exchange)
