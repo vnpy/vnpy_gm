@@ -28,4 +28,4 @@ from .gm_datafeed import GmDatafeed as Datafeed
 __all__ = ["Datafeed"]
 
 
-__version__ = "1.2.0"
+__version__ = "1.2.1"
